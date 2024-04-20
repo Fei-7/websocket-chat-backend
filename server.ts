@@ -1,8 +1,9 @@
-import express from 'express';
-import dotenv from 'dotenv';
-import cors from 'cors';
-import http from 'http';
-import { Server } from 'socket.io';
+import express from "express";
+import dotenv from "dotenv";
+import cors from "cors";
+import http from "http";
+import { Server } from "socket.io";
+import auth from "./routes/auth";
 
 // Load .env file
 dotenv.config();
@@ -11,11 +12,15 @@ dotenv.config();
 const app = express();
 
 app.use(cors());
+app.use(express.json());
 
 // Define a route handler for the root path
-app.get('/', (req, res) => {
-    res.send('Hello, world!');
+app.get("/", (req, res) => {
+    res.send("Hello, world!");
 });
+
+// Setup api routing
+app.use("/api/auth", auth);
 
 // Create http server from express app
 const server = http.createServer(app);
@@ -23,7 +28,7 @@ const server = http.createServer(app);
 // Create socket.io server
 const io = new Server(server, {
     cors: {
-        origin: '*',
+        origin: "*",
         methods: ["GET", "POST"],
         allowedHeaders: ["chatRoomId", "userId"],
         credentials: true
