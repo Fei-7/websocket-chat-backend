@@ -41,6 +41,7 @@ model chatRoom {
 
 model message {
   id String @id @default(auto()) @map("_id") @db.ObjectId
+  content String
   createdAt DateTime @default(now())
 
   chatRoomId String @db.ObjectId
