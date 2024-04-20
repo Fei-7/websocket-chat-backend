@@ -1,4 +1,5 @@
 import express from "express";
+import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import cors from "cors";
 import http from "http";
@@ -13,10 +14,11 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
 
 // Define a route handler for the root path
 app.get("/", (req, res) => {
-    res.send("Hello, world!");
+    res.send("Hello World");
 });
 
 // Setup api routing

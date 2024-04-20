@@ -61,6 +61,23 @@ export async function login(req: Request, res: Response) {
     sendTokenResponse(user, 200, res);
 }
 
+export async function getMe(req: Request, res: Response) {
+    const user = await prisma.user.findUnique({
+        where: {
+            id: req.body.user.id
+        },
+        select: {
+            id: true,
+            username: true,
+            chatRooms: true,
+        }
+    });
+    res.status(200).json({
+        success: true,
+        data: user,
+    });
+}
+
 function sendTokenResponse(user: user, statusCode: number, res: Response) {
     const token = jwt.sign({
         id: user.id
