@@ -8,13 +8,43 @@ generator client {
   provider = "prisma-client-js"
 }
 
+generator erd {
+  provider = "prisma-erd-generator"
+  output   = "../docs/database/ERD.svg"
+  disabled = "true"
+}
+
 datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
-model test {
+model user {
   id String @id @default(auto()) @map("_id") @db.ObjectId
-  username String
-  createDate DateTime @default(now())
+  username String @unique
+  hashedPassword String
+
+  chatRoomIds String[] @db.ObjectId
+  chatRooms chatRoom[] @relation(fields: [chatRoomIds], references: [id])
+  
+  messages message[]
+}
+
+model chatRoom {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  userIds String[] @db.ObjectId
+  users user[] @relation(fields: [userIds], references: [id])
+
+  messages message[]
+}
+
+model message {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  chatRoomId String @db.ObjectId
+  userId String @db.ObjectId
+
+  chatRoom chatRoom @relation(fields: [chatRoomId], references: [id])
+  user user @relation(fields: [userId], references: [id])
 }
