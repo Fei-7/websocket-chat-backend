@@ -2,6 +2,7 @@ import { Server } from "socket.io";
 import { toClientMessage, toServerTextMessage } from "../types/chat";
 import { prisma } from "../lib/prisma";
 
+// A map mapping from chatRoomId to array of all the socketId in the chatRoom
 const chatRoomIdToArrayOfSocketId = new Map<string, string[]>();
 
 export default function setup(io: Server) {
@@ -11,10 +12,13 @@ export default function setup(io: Server) {
         const userId = socket.handshake.headers['userId'] as string;
         console.log('A user connected', chatRoomId, socketId, userId);
 
-
+        // if such chatRoom doesn't exists in the map create one
         if (!chatRoomIdToArrayOfSocketId.has(chatRoomId)) {
             chatRoomIdToArrayOfSocketId.set(chatRoomId, []);
         }
+
+        // put the current socketId into the map
+        chatRoomIdToArrayOfSocketId.get(chatRoomId)?.push(socketId)
 
         // Handle chat text messages
         socket.on('chat text message', async (message: toServerTextMessage) => {
