@@ -7,10 +7,6 @@ export async function getChatInfo(req: Request, res: Response) {
     const user2Id = req.params.userId;
 
     const chatRoom = await prisma.chatRoom.findFirst({
-        include :{
-            users: true,
-            messages: true,
-        },
         where : {
             OR : [
                 {
@@ -25,6 +21,23 @@ export async function getChatInfo(req: Request, res: Response) {
                 }
             ]
         },
+        include: {
+            users: {
+                select: {
+                    id: true,
+                    username: true,
+                }
+            },
+            messages: {
+                select: {
+                    id: true,
+                    userId: true,
+                    createdAt: true,
+                    content: true,
+                    isImage: true,
+                }
+            }
+        }
     });
 
     res.send(200).json({
