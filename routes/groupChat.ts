@@ -4,7 +4,7 @@ import { protect } from "../middleware/auth";
 
 const router = express.Router();
 
-router.get("/groupChat/:chatRoomId", protect, getChatInfo);
-router.get("/groupChat/:chatRoomId/messages", protect, getChatMessages);
+router.get("/:chatRoomId", protect, getChatInfo);
+router.get("/:chatRoomId/messages", protect, getChatMessages);
 
 export default router;
