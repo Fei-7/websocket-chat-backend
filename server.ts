@@ -5,6 +5,7 @@ import cors from "cors";
 import http from "http";
 import { Server } from "socket.io";
 import auth from "./routes/auth";
+import privateChat from "./routes/privateChat";
 import setupSocket from "./socket.io/setup";
 
 // Load .env file
@@ -24,6 +25,7 @@ app.get("/", (req, res) => {
 
 // Setup api routing
 app.use("/api/auth", auth);
+app.use("/api/privateChat", privateChat);
 
 // Create http server from express app
 const server = http.createServer(app);
