@@ -1,6 +1,21 @@
 import { prisma } from "../lib/prisma";
 import { Request, Response } from "express";
 
+// GET /api/privateChat
+export async function getUsers(req: Request, res: Response) {
+    const users = await prisma.user.findMany({
+        select: {
+            id: true,
+            username: true
+        }
+    });
+
+    return res.status(200).json({
+        success: true,
+        data: users
+    });
+}
+
 // GET /api/privateChat/:userId
 export async function getChatInfo(req: Request, res: Response) {
     const user1Id = req.body.user.id;
