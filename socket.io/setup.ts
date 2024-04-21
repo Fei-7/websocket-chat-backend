@@ -1,5 +1,5 @@
 import { Server } from "socket.io";
-import { toClientTextMessage, toServerTextMessage } from "../types/chat";
+import { toClientMessage, toServerTextMessage } from "../types/chat";
 import { prisma } from "../lib/prisma";
 
 const chatRoomIdToArrayOfSocketId = new Map<string, string[]>();
@@ -25,21 +25,60 @@ export default function setup(io: Server) {
             const savedMessage = await prisma.message.create({
                 data: {
                     content: message.text,
+                    isImage: false,
                     chatRoomId: chatRoomId,
                     userId: userId
                 }
             });
 
-            // construct a toClientTextMessage object to send back to clients
-            const messageToClient: toClientTextMessage = {
+            // construct a toClientMessage object to send back to clients
+            const messageToClient: toClientMessage = {
+                id: savedMessage.id,
                 userId: savedMessage.userId,
-                createdAt: savedMessage.createdAt,
-                content: savedMessage.content
+                createdAt: savedMessage.createdAt.toISOString(),
+                content: savedMessage.content,
+                isImage: savedMessage.isImage
             };
 
             // emits message back
             const socketsInTheRoom = chatRoomIdToArrayOfSocketId.get(chatRoomId) as string[];
             io.to(socketsInTheRoom).emit('chat text message', messageToClient);
+        });
+
+        socket.on('chat image message', async (message) => {
+            console.log(message);
+            try {
+                /*
+                TODO : save image to wherever and get the url
+                 */
+
+                const imageURL = "";
+
+                // save message into db
+                const savedMessage = await prisma.message.create({
+                    data: {
+                        content: imageURL,
+                        isImage: true,
+                        chatRoomId: chatRoomId,
+                        userId: userId
+                    }
+                });
+
+                // construct a toClientMessage object to send back to clients
+                const messageToClient: toClientMessage = {
+                    id: savedMessage.id,
+                    userId: savedMessage.userId,
+                    createdAt: savedMessage.createdAt.toISOString(),
+                    content: savedMessage.content,
+                    isImage: savedMessage.isImage
+                };
+    
+                // emits image back
+                const socketsInTheRoom = chatRoomIdToArrayOfSocketId.get(chatRoomId) as string[];
+                io.to(socketsInTheRoom).emit('chat image message', messageToClient);
+            } catch (err) {
+                console.log(err);
+            }
         });
 
         socket.on('disconnect', () => {

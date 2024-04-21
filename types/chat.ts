@@ -2,8 +2,16 @@ export type toServerTextMessage = {
     text: string
 };
 
-export type toClientTextMessage = {
+export type toClientMessage = {
+    id: string;
     userId: string;
-    createdAt: Date;
+    createdAt: string;
     content: string;
+    isImage: boolean;
+};
+
+export type toServerImageMessage = {
+    type: string,
+    size: number,
+    buffer: Buffer
 };

@@ -5,6 +5,7 @@ import cors from "cors";
 import http from "http";
 import { Server } from "socket.io";
 import auth from "./routes/auth";
+import setupSocket from "./socket.io/setup";
 
 // Load .env file
 dotenv.config();
@@ -38,6 +39,10 @@ const io = new Server(server, {
     maxHttpBufferSize: 5 * 1e6,
     pingTimeout: 60000
 });
+
+
+// Setup socket.io
+setupSocket(io);
 
 // Start the server and listen on port 3000
 const PORT = process.env.PORT || 3000;
