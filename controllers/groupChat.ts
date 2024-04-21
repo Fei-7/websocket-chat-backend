@@ -15,15 +15,6 @@ export async function getChatInfo(req: Request, res: Response) {
                     id: true,
                     username: true,
                 }
-            },
-            messages: {
-                select: {
-                    id: true,
-                    userId: true,
-                    createdAt: true,
-                    content: true,
-                    isImage: true,
-                }
             }
         }
     });
