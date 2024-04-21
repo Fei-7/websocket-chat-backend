@@ -7,7 +7,7 @@ import auth from "./routes/auth";
 import privateChat from "./routes/privateChat";
 import groupChat from "./routes/groupChat";
 import { setup as setupSocket } from "./socket.io/socket";
-
+import file from "./routes/file";
 // Load .env file
 dotenv.config();
 
@@ -20,14 +20,14 @@ app.use(cookieParser());
 
 // Define a route handler for the root path
 app.get("/", (req, res) => {
-    res.send("Hello World");
+  res.send("Hello World");
 });
 
 // Setup api routing
 app.use("/api/auth", auth);
 app.use("/api/privateChat", privateChat);
 app.use("/api/groupChat", groupChat);
-
+app.use("/api/file", file);
 // Create http server from express app
 const server = http.createServer(app);
 
@@ -37,5 +37,5 @@ setupSocket(server);
 // Start the server and listen on port 3000
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Server is running on http://localhost:${PORT}`);
 });
