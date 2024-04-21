@@ -32,6 +32,7 @@ model user {
 
 model chatRoom {
   id String @id @default(auto()) @map("_id") @db.ObjectId
+  name String?
 
   userIds String[] @db.ObjectId
   users   user[]   @relation(fields: [userIds], references: [id])
