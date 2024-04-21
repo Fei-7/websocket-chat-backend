@@ -7,7 +7,6 @@ import auth from "./routes/auth";
 import privateChat from "./routes/privateChat";
 import groupChat from "./routes/groupChat";
 import { setup as setupSocket } from "./socket.io/socket";
-import file from "./routes/file";
 // Load .env file
 dotenv.config();
 
@@ -27,7 +26,6 @@ app.get("/", (req, res) => {
 app.use("/api/auth", auth);
 app.use("/api/privateChat", privateChat);
 app.use("/api/groupChat", groupChat);
-app.use("/api/file", file);
 // Create http server from express app
 const server = http.createServer(app);
 
