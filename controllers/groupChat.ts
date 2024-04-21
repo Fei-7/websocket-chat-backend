@@ -1,6 +1,41 @@
 import { prisma } from "../lib/prisma";
 import { Request, Response } from "express";
 
+export async function getChatRooms(req: Request, res: Response) {
+    const userId = req.body.user.id;
+
+    const user = await prisma.user.findUnique({
+        where: {
+            id: userId
+        },
+        select: {
+            chatRooms: {
+                where: {
+                    isGroup: true
+                },
+                select: {
+                    id: true,
+                    name: true,
+                    userIds: true
+                }
+            }
+        }
+    });
+
+    if (!user) {
+        return res.status(404).json({
+            success: false
+        });
+    }
+
+    const groupChatRooms = user.chatRooms;
+
+    return res.status(200).json({
+        success: true,
+        data: groupChatRooms
+    });
+}
+
 // GET /api/groupChat/:chatRoomId
 export async function getChatInfo(req: Request, res: Response) {
     const chatRoomId = req.params.chatRoomId;

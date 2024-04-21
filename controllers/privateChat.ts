@@ -6,8 +6,9 @@ export async function getChatInfo(req: Request, res: Response) {
     const user1Id = req.body.user.id;
     const user2Id = req.params.userId;
 
-    const chatRoom = await prisma.chatRoom.findFirst({
+    let chatRoom = await prisma.chatRoom.findFirst({
         where : {
+            isGroup: false,
             OR : [
                 {
                     userIds: {
@@ -32,8 +33,19 @@ export async function getChatInfo(req: Request, res: Response) {
     });
 
     if (!chatRoom) {
-        return res.send(404).json({
-            success: false
+        chatRoom = await prisma.chatRoom.create({
+            data: {
+                isGroup: false,
+                userIds: [user1Id, user2Id]
+            },
+            include: {
+                users: {
+                    select: {
+                        id: true,
+                        username: true,
+                    }
+                }
+            }
         });
     }
 
