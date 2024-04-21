@@ -39,6 +39,7 @@ export async function getChatRooms(req: Request, res: Response) {
 
 // GET /api/groupChat/:chatRoomId
 export async function getChatInfo(req: Request, res: Response) {
+    const userId = req.body.user.id;
     const chatRoomId = req.params.chatRoomId;
 
     const chatRoom = await prisma.chatRoom.findUnique({
@@ -57,6 +58,12 @@ export async function getChatInfo(req: Request, res: Response) {
 
     if (!chatRoom) {
         return res.send(404).json({
+            success: false
+        });
+    }
+
+    if (!chatRoom.userIds.includes(userId)) {
+        return res.send(401).json({
             success: false
         });
     }

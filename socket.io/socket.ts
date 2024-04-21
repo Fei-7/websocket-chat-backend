@@ -1,5 +1,5 @@
 import { Server } from "socket.io";
-import { toClientMessage, toServerTextMessage } from "../types/chat";
+import { toClientMessage, toServerImageMessage, toServerTextMessage } from "../types/chat";
 import { prisma } from "../lib/prisma";
 import http from "http";
 
@@ -63,7 +63,7 @@ export function setup(httpServer: http.Server<typeof http.IncomingMessage, typeo
             io.to(socketsInTheRoom).emit('chat text message', messageToClient);
         });
 
-        socket.on('chat image message', async (message) => {
+        socket.on('chat image message', async (message: toServerImageMessage) => {
             console.log(message);
             try {
                 /*

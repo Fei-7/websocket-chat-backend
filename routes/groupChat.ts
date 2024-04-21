@@ -8,4 +8,10 @@ router.get("/", protect, getChatRooms);
 router.get("/:chatRoomId", protect, getChatInfo);
 router.get("/:chatRoomId/messages", protect, getChatMessages);
 
+/**
+ * TODO: 
+ * 1. Join group chat
+ * 2. Create group chat
+ */
+
 export default router;
