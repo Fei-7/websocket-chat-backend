@@ -6,6 +6,7 @@ import http from "http";
 import { Server } from "socket.io";
 import auth from "./routes/auth";
 import privateChat from "./routes/privateChat";
+import groupChat from "./routes/groupChat";
 import setupSocket from "./socket.io/setup";
 
 // Load .env file
@@ -26,6 +27,7 @@ app.get("/", (req, res) => {
 // Setup api routing
 app.use("/api/auth", auth);
 app.use("/api/privateChat", privateChat);
+app.use("/api/groupChat", groupChat);
 
 // Create http server from express app
 const server = http.createServer(app);
