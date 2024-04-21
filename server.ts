@@ -3,11 +3,10 @@ import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import cors from "cors";
 import http from "http";
-import { Server } from "socket.io";
 import auth from "./routes/auth";
 import privateChat from "./routes/privateChat";
 import groupChat from "./routes/groupChat";
-import setupSocket from "./socket.io/setup";
+import { setup as setupSocket } from "./socket.io/socket";
 
 // Load .env file
 dotenv.config();
@@ -32,21 +31,8 @@ app.use("/api/groupChat", groupChat);
 // Create http server from express app
 const server = http.createServer(app);
 
-// Create socket.io server
-const io = new Server(server, {
-    cors: {
-        origin: "*",
-        methods: ["GET", "POST"],
-        allowedHeaders: ["chatRoomId", "userId"],
-        credentials: true
-    },
-    maxHttpBufferSize: 5 * 1e6,
-    pingTimeout: 60000
-});
-
-
-// Setup socket.io
-setupSocket(io);
+// Setup socket.io with the http server
+setupSocket(server);
 
 // Start the server and listen on port 3000
 const PORT = process.env.PORT || 3000;

@@ -1,11 +1,25 @@
 import { Server } from "socket.io";
 import { toClientMessage, toServerTextMessage } from "../types/chat";
 import { prisma } from "../lib/prisma";
+import http from "http";
+
+export let io: Server;
 
 // A map mapping from chatRoomId to array of all the socketId in the chatRoom
 const chatRoomIdToArrayOfSocketId = new Map<string, string[]>();
 
-export default function setup(io: Server) {
+export function setup(httpServer: http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>) {
+    io = new Server(httpServer, {
+        cors: {
+            origin: "*",
+            methods: ["GET", "POST"],
+            allowedHeaders: ["chatRoomId", "userId"],
+            credentials: true
+        },
+        maxHttpBufferSize: 5 * 1e6,
+        pingTimeout: 60000
+    });
+
     io.on('connection', (socket) => {
         const socketId = socket.id;
         const chatRoomId = socket.handshake.headers['chatRoomId'] as string;
