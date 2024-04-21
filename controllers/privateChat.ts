@@ -31,8 +31,59 @@ export async function getChatInfo(req: Request, res: Response) {
         }
     });
 
+    if (!chatRoom) {
+        return res.send(404).json({
+            success: false
+        });
+    }
+
     res.send(200).json({
         success: true,
         data: chatRoom
+    });
+}
+
+// GET /api/privateChat/:userId/messages
+export async function getChatMessages(req: Request, res: Response) {
+    const user1Id = req.body.user.id;
+    const user2Id = req.params.userId;
+
+    const chatRoom = await prisma.chatRoom.findFirst({
+        where : {
+            OR : [
+                {
+                    userIds: {
+                        equals: [user1Id, user2Id]
+                    }
+                },
+                {
+                    userIds: {
+                        equals: [user2Id, user1Id]
+                    }
+                }
+            ]
+        },
+        select: {
+            messages: {
+                select: {
+                    id: true,
+                    userId: true,
+                    createdAt: true,
+                    content: true,
+                    isImage: true,
+                }
+            }
+        }
+    });
+
+    if (!chatRoom) {
+        return res.send(404).json({
+            success: false
+        });
+    }
+
+    res.send(200).json({
+        success: true,
+        data: chatRoom.messages
     });
 }
