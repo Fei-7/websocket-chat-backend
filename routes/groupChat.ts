@@ -21,6 +21,6 @@ router.get("/:chatRoomId/messages", protect, getChatMessages);
  */
 
 router.post("/", protect, createGroupChat);
-router.put("/:chatRoomId", protect, createGroupChat);
+router.put("/:chatRoomId", protect, joinGroupChat);
 
 export default router;
