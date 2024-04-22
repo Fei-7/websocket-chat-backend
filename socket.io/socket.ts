@@ -42,6 +42,7 @@ export function setup(httpServer: http.Server<typeof http.IncomingMessage, typeo
             userId = userInfo.userId;
             chatRoomId = userInfo.chatRoomId;
             console.log('A user connected', chatRoomId, socketId, userId);
+            console.log("Chatroom id = ", chatRoomId);
 
             // if such chatRoom doesn't exists in the map create one
             if (!chatRoomIdToArrayOfSocketId.has(chatRoomId)) {
