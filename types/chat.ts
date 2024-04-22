@@ -1,3 +1,5 @@
+
+
 export type toServerTextMessage = {
     text: string
 };
@@ -15,3 +17,8 @@ export type toClientMessage = {
     content: string;
     isImage: boolean;
 };
+
+export type MessagesGroupByDate = {
+    Date: string;
+    Messages: toClientMessage[];
+}

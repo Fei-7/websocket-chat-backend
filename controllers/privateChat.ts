@@ -1,5 +1,6 @@
 import { prisma } from "../lib/prisma";
 import { Request, Response } from "express";
+import { MessagesGroupByDate } from "../types/chat";
 
 // GET /api/privateChat
 export async function getUsers(req: Request, res: Response) {
@@ -110,8 +111,21 @@ export async function getChatMessages(req: Request, res: Response) {
         });
     }
 
+    // Group messages by createdAt date
+    const groupedMessages: { [key: string]: { Date: string; Messages: typeof chatRoom.messages } } = {};
+    chatRoom.messages.forEach((message) => {
+      const createdAtDate = message.createdAt.toDateString();
+      if (!groupedMessages[createdAtDate]) {
+        groupedMessages[createdAtDate] = { Date: createdAtDate, Messages: [] };
+      }
+      groupedMessages[createdAtDate].Messages.push(message);
+    });
+
+    // Convert the groupedMessages object into an array of objects
+    const result = Object.values(groupedMessages) as unknown as MessagesGroupByDate[];
+
     res.status(200).json({
         success: true,
-        data: chatRoom.messages
+        data: result
     });
 }

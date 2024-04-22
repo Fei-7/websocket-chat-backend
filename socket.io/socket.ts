@@ -2,6 +2,7 @@ import { Server } from "socket.io";
 import { toClientMessage, toServerImageMessage, toServerTextMessage } from "../types/chat";
 import { prisma } from "../lib/prisma";
 import http from "http";
+import { uploadFile } from "../lib/file";
 
 export let io: Server;
 
@@ -93,8 +94,14 @@ export function setup(httpServer: http.Server<typeof http.IncomingMessage, typeo
                 /*
                 TODO : save image to wherever and get the url
                  */
+                const uploadImageResult = await uploadFile(message.buffer);
 
-                const imageURL = "";
+                if (!uploadImageResult.success) {
+                    console.log("failed to upload image");
+                    return;
+                }
+
+                const imageURL = uploadImageResult.url;
 
                 // save message into db
                 const savedMessage = await prisma.message.create({
