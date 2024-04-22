@@ -131,11 +131,11 @@ export async function createGroupChat(req: Request, res: Response) {
   }
 }
 
-//PUT /api/groupChat/:id
+//PUT /api/groupChat/:chatRoomId
 export async function joinGroupChat(req: Request, res: Response) {
   try {
     const userId = req.body.user.id;
-    const chatRoomId = req.params.id;
+    const chatRoomId = req.params.chatRoomId;
     const result = await prisma.chatRoom.update({
       data: {
         userIds: {
