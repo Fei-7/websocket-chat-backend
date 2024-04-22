@@ -31,7 +31,7 @@ model user {
 }
 
 model chatRoom {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
+  id   String  @id @default(auto()) @map("_id") @db.ObjectId
   name String?
 
   isGroup Boolean
@@ -44,7 +44,7 @@ model chatRoom {
 
 model message {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  content   String   // isImage? imageURL : text
+  content   String // isImage? imageURL : text
   createdAt DateTime @default(now())
   isImage   Boolean
 
