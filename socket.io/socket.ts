@@ -8,6 +8,11 @@ export let io: Server;
 // A map mapping from chatRoomId to array of all the socketId in the chatRoom
 const chatRoomIdToArrayOfSocketId = new Map<string, string[]>();
 
+const onlineUsers:{
+    id: string
+    username: string
+}[]  = [];
+
 export function setup(httpServer: http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>) {
     io = new Server(httpServer, {
         cors: {
@@ -20,7 +25,7 @@ export function setup(httpServer: http.Server<typeof http.IncomingMessage, typeo
         pingTimeout: 60000
     });
 
-    io.on('connection', (socket) => {
+    io.on('connection', async (socket) => {
         const socketId = socket.id;
         const chatRoomId = socket.handshake.headers['chatRoomId'] as string;
         const userId = socket.handshake.headers['userId'] as string;
@@ -32,7 +37,26 @@ export function setup(httpServer: http.Server<typeof http.IncomingMessage, typeo
         }
 
         // put the current socketId into the map
-        chatRoomIdToArrayOfSocketId.get(chatRoomId)?.push(socketId)
+        chatRoomIdToArrayOfSocketId.get(chatRoomId)?.push(socketId);
+
+        const user = await prisma.user.findUnique({
+            where: {
+                id: userId
+            },
+            select: {
+                id: true,
+                username: true
+            }
+        });
+
+        if (!user) {
+            socket.disconnect();
+            return;
+        }
+
+        onlineUsers.push(user);
+
+        socket.broadcast.emit("online users update", onlineUsers);
 
         // Handle chat text messages
         socket.on('chat text message', async (message: toServerTextMessage) => {
@@ -101,9 +125,10 @@ export function setup(httpServer: http.Server<typeof http.IncomingMessage, typeo
 
         socket.on('disconnect', () => {
             const socketsInTheRoom = chatRoomIdToArrayOfSocketId.get(chatRoomId) as string[];
+            let indexToRemove = -1;
             if (socketsInTheRoom) {
                 const socketIdToRemove = socketId;
-                const indexToRemove = socketsInTheRoom.indexOf(socketIdToRemove);
+                indexToRemove = socketsInTheRoom.indexOf(socketIdToRemove);
                 if (indexToRemove >= 0) {
                     socketsInTheRoom.splice(indexToRemove, 1);
                 }
@@ -111,6 +136,20 @@ export function setup(httpServer: http.Server<typeof http.IncomingMessage, typeo
                     chatRoomIdToArrayOfSocketId.delete(chatRoomId);
                 }
             }
+
+            const userIdToRemove = userId;
+            indexToRemove = -1;
+            for (let i=0;i<onlineUsers.length;i++) {
+                if (onlineUsers[i].id === userIdToRemove) {
+                    indexToRemove = i;
+                    break;
+                }
+            }
+            if (indexToRemove >= 0) {
+                onlineUsers.splice(indexToRemove, 1);
+            }
+
+            socket.broadcast.emit("online users update", onlineUsers);
     
             console.log('A user disconnected');
         });
