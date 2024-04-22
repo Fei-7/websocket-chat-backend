@@ -1,5 +1,6 @@
 import { prisma } from "../lib/prisma";
 import { Request, Response } from "express";
+import { MessagesGroupByDate } from "../types/chat";
 
 // GET /api/groupChat
 export async function getChatRooms(req: Request, res: Response) {
