@@ -73,7 +73,8 @@ export function setup(httpServer: http.Server<typeof http.IncomingMessage, typeo
             }
     
             onlineUsers.push(user);
-    
+            
+            console.log("Emiting");
             socket.broadcast.emit("online users update", onlineUsers);
         });
 
