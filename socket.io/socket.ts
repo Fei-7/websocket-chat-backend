@@ -40,7 +40,7 @@ export function setup(httpServer: http.Server<typeof http.IncomingMessage, typeo
         // put the current socketId into the map
         chatRoomIdToArrayOfSocketId.get(chatRoomId)?.push(socketId);
 
-        if (!userId || !chatRoomId) {
+        if (!userId) {
             socket.disconnect();
             return;
         }
