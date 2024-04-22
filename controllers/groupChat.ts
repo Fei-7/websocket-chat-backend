@@ -57,18 +57,18 @@ export async function getChatInfo(req: Request, res: Response) {
     });
 
     if (!chatRoom) {
-        return res.send(404).json({
+        return res.status(404).json({
             success: false
         });
     }
 
     if (!chatRoom.userIds.includes(userId)) {
-        return res.send(401).json({
+        return res.status(401).json({
             success: false
         });
     }
 
-    res.send(200).json({
+    res.status(200).json({
         success: true,
         data: chatRoom
     });
@@ -96,12 +96,12 @@ export async function getChatMessages(req: Request, res: Response) {
     });
 
     if (!chatRoom) {
-        return res.send(404).json({
+        return res.status(404).json({
             success: false
         });
     }
 
-    res.send(200).json({
+    res.status(200).json({
         success: true,
         data: chatRoom.messages
     });
