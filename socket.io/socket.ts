@@ -17,9 +17,9 @@ const onlineUsers:{
 export function setup(httpServer: http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>) {
     io = new Server(httpServer, {
         cors: {
-            origin: "*",
+            origin: "http://localhost:3000",
             methods: ["GET", "POST"],
-            allowedHeaders: ["chatRoomId", "userId"],
+            allowedHeaders: ["chatRoomId", "user-id"],
             credentials: true
         },
         maxHttpBufferSize: 5 * 1e6,
@@ -28,41 +28,54 @@ export function setup(httpServer: http.Server<typeof http.IncomingMessage, typeo
 
     io.on('connection', async (socket) => {
         const socketId = socket.id;
-        const chatRoomId = socket.handshake.headers['chatRoomId'] as string;
-        const userId = socket.handshake.headers['userId'] as string;
-        console.log('A user connected', chatRoomId, socketId, userId);
+        let chatRoomId = "";
+        let userId = "";
+        let user: {
+            id: string;
+            username: string;
+        } | null = null;
 
-        // if such chatRoom doesn't exists in the map create one
-        if (!chatRoomIdToArrayOfSocketId.has(chatRoomId)) {
-            chatRoomIdToArrayOfSocketId.set(chatRoomId, []);
-        }
+        socket.on("new connection", async (userInfo: {
+            userId: string,
+            chatRoomId: string
+        }) => {
+            userId = userInfo.userId;
+            chatRoomId = userInfo.chatRoomId;
+            console.log('A user connected', chatRoomId, socketId, userId);
 
-        // put the current socketId into the map
-        chatRoomIdToArrayOfSocketId.get(chatRoomId)?.push(socketId);
-
-        if (!userId) {
-            socket.disconnect();
-            return;
-        }
-        
-        const user = await prisma.user.findUnique({
-            where: {
-                id: userId
-            },
-            select: {
-                id: true,
-                username: true
+            // if such chatRoom doesn't exists in the map create one
+            if (!chatRoomIdToArrayOfSocketId.has(chatRoomId)) {
+                chatRoomIdToArrayOfSocketId.set(chatRoomId, []);
             }
+
+            // put the current socketId into the map
+            chatRoomIdToArrayOfSocketId.get(chatRoomId)?.push(socketId);
+
+            if (!userId) {
+                console.log("user id not valid", userId);
+                socket.disconnect();
+                return;
+            }
+            
+            user = await prisma.user.findUnique({
+                where: {
+                    id: userId
+                },
+                select: {
+                    id: true,
+                    username: true
+                }
+            });
+    
+            if (!user) {
+                socket.disconnect();
+                return;
+            }
+    
+            onlineUsers.push(user);
+    
+            socket.broadcast.emit("online users update", onlineUsers);
         });
-
-        if (!user) {
-            socket.disconnect();
-            return;
-        }
-
-        onlineUsers.push(user);
-
-        socket.broadcast.emit("online users update", onlineUsers);
 
         // Handle chat text messages
         socket.on('chat text message', async (message: toServerTextMessage) => {
