@@ -98,6 +98,11 @@ export function setup(httpServer: http.Server<typeof http.IncomingMessage, typeo
             /* Handle chat message */
             console.log(message);
 
+            if (!chatRoomId) {
+                console.log("No chatRoomId given");
+                return;
+            }
+
             // save message into db
             const savedMessage = await prisma.message.create({
                 data: {
@@ -126,6 +131,10 @@ export function setup(httpServer: http.Server<typeof http.IncomingMessage, typeo
 
         socket.on('chat image message', async (message: toServerImageMessage) => {
             console.log(message);
+            if (!chatRoomId) {
+                console.log("No chatRoomId given");
+                return;
+            }
             try {
                 /*
                 TODO : save image to wherever and get the url
