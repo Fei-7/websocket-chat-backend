@@ -23,9 +23,9 @@ export async function getChatInfo(req: Request, res: Response) {
     const user2Id = req.params.userId;
 
     let chatRoom = await prisma.chatRoom.findFirst({
-        where : {
+        where: {
             isGroup: false,
-            OR : [
+            OR: [
                 {
                     userIds: {
                         equals: [user1Id, user2Id]
@@ -63,6 +63,27 @@ export async function getChatInfo(req: Request, res: Response) {
                 }
             }
         });
+
+        await prisma.user.update({
+            where: {
+                id: user1Id
+            },
+            data: {
+                chatRoomIds: {
+                    push: chatRoom.id,
+                },
+            }
+        });
+        await prisma.user.update({
+            where: {
+                id: user1Id
+            },
+            data: {
+                chatRoomIds: {
+                    push: chatRoom.id,
+                },
+            }
+        });
     }
 
     res.status(200).json({
@@ -77,9 +98,9 @@ export async function getChatMessages(req: Request, res: Response) {
     const user2Id = req.params.userId;
 
     const chatRoom = await prisma.chatRoom.findFirst({
-        where : {
+        where: {
             isGroup: false,
-            OR : [
+            OR: [
                 {
                     userIds: {
                         equals: [user1Id, user2Id]
@@ -114,24 +135,24 @@ export async function getChatMessages(req: Request, res: Response) {
 
     const messages = chatRoom.messages.map((message) => {
         return {
-          id: message.id,
-          userId: message.userId,
-          createdAt: message.createdAt,
-          content: message.content,
-          isImage: message.isImage,
-          username: message.user.username
+            id: message.id,
+            userId: message.userId,
+            createdAt: message.createdAt,
+            content: message.content,
+            isImage: message.isImage,
+            username: message.user.username
         }
-      })
-    
-      // Group messages by createdAt date
-      const groupedMessages: { [key: string]: { Date: string; Messages: typeof messages } } = {};
-      messages.forEach((message) => {
+    })
+
+    // Group messages by createdAt date
+    const groupedMessages: { [key: string]: { Date: string; Messages: typeof messages } } = {};
+    messages.forEach((message) => {
         const createdAtDate = message.createdAt.toDateString();
         if (!groupedMessages[createdAtDate]) {
-          groupedMessages[createdAtDate] = { Date: createdAtDate, Messages: [] };
+            groupedMessages[createdAtDate] = { Date: createdAtDate, Messages: [] };
         }
         groupedMessages[createdAtDate].Messages.push(message);
-      });
+    });
 
     // Convert the groupedMessages object into an array of objects
     const result = Object.values(groupedMessages) as unknown as MessagesGroupByDate[];

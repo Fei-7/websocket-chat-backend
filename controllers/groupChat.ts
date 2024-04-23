@@ -140,7 +140,7 @@ export async function getChatMessages(req: Request, res: Response) {
 // POST /api/groupChat
 export async function createGroupChat(req: Request, res: Response) {
   try {
-    const userId = req.body.user.id;
+    const userId = req.body.user.id as string;
     const name = req.body.name;
     const result = await prisma.chatRoom.create({
       data: {
@@ -150,8 +150,20 @@ export async function createGroupChat(req: Request, res: Response) {
       },
     });
 
+    await prisma.user.update({
+      where: {
+        id: userId
+      },
+      data: {
+        chatRoomIds: {
+          push: result.id,
+        },
+      }
+    });
+
     res.status(200).json({
       success: true,
+      data: result
     });
   } catch (err) {
     console.log(err);
