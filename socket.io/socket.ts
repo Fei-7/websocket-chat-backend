@@ -35,6 +35,13 @@ export function setup(httpServer: http.Server<typeof http.IncomingMessage, typeo
             username: string;
         } | null = null;
 
+        socket.on("get online users", () => {
+            console.log("get onliner");
+            console.log("Emiting");
+            console.log(onlineUsers)
+            socket.emit("online users update", onlineUsers);
+        })
+
         socket.on("new connection", async (userInfo: {
             userId: string,
             chatRoomId: string
@@ -69,6 +76,7 @@ export function setup(httpServer: http.Server<typeof http.IncomingMessage, typeo
             });
     
             if (!user) {
+                console.log("USER NOT FOUND?");
                 socket.disconnect();
                 return;
             }
@@ -76,7 +84,13 @@ export function setup(httpServer: http.Server<typeof http.IncomingMessage, typeo
             onlineUsers.push(user);
             
             console.log("Emiting");
+            console.log(onlineUsers)
             socket.broadcast.emit("online users update", onlineUsers);
+            socket.emit("online users update", onlineUsers);
+
+            // const socketsInTheRoom = chatRoomIdToArrayOfSocketId.get(chatRoomId) as string[];
+
+            socket.to(socketId).emit("online users update", onlineUsers);
         });
 
         // Handle chat text messages
