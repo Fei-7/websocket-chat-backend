@@ -190,6 +190,17 @@ export async function joinGroupChat(req: Request, res: Response) {
       },
     });
 
+    await prisma.user.update({
+      where: {
+        id: userId
+      },
+      data: {
+        chatRoomIds: {
+          push: result.id,
+        },
+      }
+    });
+
     res.status(200).json({
       success: true,
     });
