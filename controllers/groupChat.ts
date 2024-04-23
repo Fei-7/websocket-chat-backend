@@ -175,6 +175,7 @@ export async function createGroupChat(req: Request, res: Response) {
 
 //PUT /api/groupChat/:chatRoomId
 export async function joinGroupChat(req: Request, res: Response) {
+  console.log("PUTTTT", req.body.user);
   try {
     const userId = req.body.user.id;
     const chatRoomId = req.params.chatRoomId;

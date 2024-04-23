@@ -9,11 +9,14 @@ export async function protect(req: Request, res: Response, next: Function){
 
     // Make sure token exists
     if (!token) {
+        console.log("TOken not found");
         return res.status(401).json({
             success: false,
             message: "Not authorized to access this route",
         });
     }
+
+    console.log(req.method);
     try {
         // Verify token
         const decoded = jwt.verify(token, jwtSecret) as JwtPayload;

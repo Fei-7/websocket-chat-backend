@@ -23,7 +23,7 @@ router.get("/:chatRoomId/messages", protect, getChatMessages);
  */
 
 router.post("/", protect, createGroupChat);
-router.put("/:chatRoomId", protect, joinGroupChat);
+router.get("/:chatRoomId/join", protect, joinGroupChat);
 
 
 export default router;
