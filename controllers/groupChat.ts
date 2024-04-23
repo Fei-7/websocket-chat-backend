@@ -91,7 +91,7 @@ export async function getChatMessages(req: Request, res: Response) {
           createdAt: true,
           content: true,
           isImage: true,
-          user: true
+          user: true,
         },
       },
     },
@@ -110,12 +110,14 @@ export async function getChatMessages(req: Request, res: Response) {
       createdAt: message.createdAt,
       content: message.content,
       isImage: message.isImage,
-      username: message.user.username
-    }
-  })
+      username: message.user.username,
+    };
+  });
 
   // Group messages by createdAt date
-  const groupedMessages: { [key: string]: { Date: string; Messages: typeof messages } } = {};
+  const groupedMessages: {
+    [key: string]: { Date: string; Messages: typeof messages };
+  } = {};
   messages.forEach((message) => {
     const createdAtDate = message.createdAt.toDateString();
     if (!groupedMessages[createdAtDate]) {
@@ -125,7 +127,9 @@ export async function getChatMessages(req: Request, res: Response) {
   });
 
   // Convert the groupedMessages object into an array of objects
-  const result = Object.values(groupedMessages) as unknown as MessagesGroupByDate[];
+  const result = Object.values(
+    groupedMessages
+  ) as unknown as MessagesGroupByDate[];
 
   res.status(200).json({
     success: true,
@@ -175,6 +179,31 @@ export async function joinGroupChat(req: Request, res: Response) {
 
     res.status(200).json({
       success: true,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      success: false,
+    });
+  }
+}
+
+export async function getAllChatRooms(req: Request, res: Response) {
+  try {
+    const result = await prisma.chatRoom.findMany({
+      where: {
+        isGroup: true,
+      },
+      select: {
+        id: true,
+        name: true,
+        userIds: true,
+      },
+    });
+    console.log(result);
+    res.status(200).json({
+      success: true,
+      data: result,
     });
   } catch (err) {
     console.log(err);
