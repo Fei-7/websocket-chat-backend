@@ -17,7 +17,7 @@ const onlineUsers:{
 export function setup(httpServer: http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>) {
     io = new Server(httpServer, {
         cors: {
-            origin: "http://localhost:3000",
+            origin: process.env.FRONT_END_URL,
             methods: ["GET", "POST"],
             allowedHeaders: ["chatRoomId", "user-id"],
             credentials: true
@@ -105,6 +105,7 @@ export function setup(httpServer: http.Server<typeof http.IncomingMessage, typeo
 
             // emits message back
             const socketsInTheRoom = chatRoomIdToArrayOfSocketId.get(chatRoomId) as string[];
+            console.log(socketsInTheRoom);
             io.to(socketsInTheRoom).emit('chat text message', messageToClient);
         });
 
