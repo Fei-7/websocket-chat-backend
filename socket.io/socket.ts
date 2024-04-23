@@ -98,6 +98,7 @@ export function setup(httpServer: http.Server<typeof http.IncomingMessage, typeo
             const messageToClient: toClientMessage = {
                 id: savedMessage.id,
                 userId: savedMessage.userId,
+                username: user!.username,
                 createdAt: savedMessage.createdAt.toISOString(),
                 content: savedMessage.content,
                 isImage: savedMessage.isImage
@@ -138,6 +139,7 @@ export function setup(httpServer: http.Server<typeof http.IncomingMessage, typeo
                 const messageToClient: toClientMessage = {
                     id: savedMessage.id,
                     userId: savedMessage.userId,
+                    username: user!.username,
                     createdAt: savedMessage.createdAt.toISOString(),
                     content: savedMessage.content,
                     isImage: savedMessage.isImage

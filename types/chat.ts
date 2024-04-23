@@ -13,6 +13,7 @@ export type toServerImageMessage = {
 export type toClientMessage = {
     id: string;
     userId: string;
+    username: string;
     createdAt: string;
     content: string;
     isImage: boolean;
@@ -20,6 +21,7 @@ export type toClientMessage = {
 export type Message = {
     id: string;
     userId: string;
+    username: string;
     createdAt: Date;
     content: string;
     isImage: boolean;

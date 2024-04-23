@@ -91,6 +91,7 @@ export async function getChatMessages(req: Request, res: Response) {
           createdAt: true,
           content: true,
           isImage: true,
+          user: true
         },
       },
     },
@@ -102,9 +103,20 @@ export async function getChatMessages(req: Request, res: Response) {
     });
   }
 
+  const messages = chatRoom.messages.map((message) => {
+    return {
+      id: message.id,
+      userId: message.userId,
+      createdAt: message.createdAt,
+      content: message.content,
+      isImage: message.isImage,
+      username: message.user.username
+    }
+  })
+
   // Group messages by createdAt date
-  const groupedMessages: { [key: string]: { Date: string; Messages: typeof chatRoom.messages } } = {};
-  chatRoom.messages.forEach((message) => {
+  const groupedMessages: { [key: string]: { Date: string; Messages: typeof messages } } = {};
+  messages.forEach((message) => {
     const createdAtDate = message.createdAt.toDateString();
     if (!groupedMessages[createdAtDate]) {
       groupedMessages[createdAtDate] = { Date: createdAtDate, Messages: [] };
